@@ -91,32 +91,31 @@ class interior_evolution:
         #################################
         # Radiogenic elements 
         #################################
-        self.Racrit = 1100. 
-        self.cc = 840.0    
-        self.cm = 1142.0          
-        self.alpha = 3e-5       
-        self.lamb = 1.42e-17
-        self.E = 3e5    
-        self.R = 8.3144 
-        self.etaref = 1e21         
-        self.Tref = 1600.0
-        self.km = 4. 	                 
+        self.Racrit = 1100.    # Critical Rayleigh number
+        self.cc = 840.0        # Core heat capacity (J/kg/K)
+        self.cm = 1142.0       # Mantle heat capacity (J/kg/K)
+        self.alpha = 3e-5      # Thermal expansivity (1/K)
+        self.km = 4. 	       # Thermal conductivity (W/m/K)          
+        self.E = 3e5           # Activation energy (J/kg/mol)
+        self.R = 8.3144        # Gas constant (J/K/mol)
+        self.etaref = 1e21     # Reference viscosity
+        self.Tref = 1600.0     # Reference temperature
 
         #################################
         # Radiogenic elements 
         #################################
         # Half lives
-        yr = 365.0*24.0*60.0*60.0   # 1 year in seconds
+        yr = 365.0*24.0*60.0*60.0     # 1 year in seconds
         self.tau_U238  = 4.47e9*yr
         self.tau_U235  = 0.704e9*yr
         self.tau_Th232 = 14.5e9*yr
         self.tau_K40   = 1.2483e9*yr
-        # Isotopes abundaces
+        # Isotopes relative abundaces
         self.f_U238  = 0.9928
         self.f_U235  = 7.2e-3
         self.f_Th232 = 1.0
         self.f_K40   = 1.19e-4
-        # Decay energies (J)
+        # Isoptopes heat productions (W/kg)
         self.H_U238  = 9.46e-5
         self.H_U235  = 5.69e-4
         self.H_K40   = 2.92e-5
