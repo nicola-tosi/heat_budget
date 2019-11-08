@@ -60,6 +60,33 @@ def calculate_dry_solidus(P):
     return Tsol
 
 ######################################################################################
+def calculate_dry_liquidus(P):
+    """Calculate dry liquidus of Katz et al. (Gcubed, 2003).
+    Liquidus in K, input pressure in GPa"""
+######################################################################################
+
+    b1 = 2053.15
+    b2 = 45.0
+    b3 = -2.0
+    Tliq = b1 + b2*P + b3*P*P
+
+    return Tliq
+
+######################################################################################
+def write_output_file(s):
+    """ """
+######################################################################################
+
+    yrs = 365.0*24.0*60.0*60.0   # 1 year in seconds
+    outfile = s.name + ".out"
+    outdata = np.array([s.t/yrs/1e6, s.Q_tot, s.Ur, s.Tm, s.Tb, s.Tc, s.etam, s.etab, s.etac, s.qs, s.qc, s.delta_s, s.delta_c])
+    outdata = outdata.T
+    with open(outfile, 'w+') as outfile_id:
+        np.savetxt(outfile_id, outdata, fmt=['%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e', '%.4e'])
+    
+    return
+
+######################################################################################
 def mass_radius_relations(Mr):
     """Given the mass planetary mass to Earth mass ratio Mr = Mp/M_E,
     calculate planetary radius (Rp), core radius (Rc), surface gravity (g),
@@ -70,9 +97,9 @@ def mass_radius_relations(Mr):
 
     Rp_E = 6371e3   # Earth raidus
     Rc_E = 3480e3   # Earth's core radius
-    M_E = 5.972e24 # Earth mass
-    g_E = 9.81     # Earth surface gravity
-    fc = 0.326     # Earth core mass fraction
+    M_E = 5.972e24  # Earth mass
+    g_E = 9.81      # Earth surface gravity
+    fc = 0.326      # Earth core mass fraction
 
     Rp = Rp_E*Mr**0.27
     Rc = Rc_E*Mr**0.247

@@ -118,11 +118,13 @@ class interior_evolution:
             Ra_int = self.rhom*self.g*self.alpha*( deltaTm + deltaTc )*D**3./(kappa*self.etam[i])    
             Racrit_int = 0.28*Ra_int**0.21
 
-            # Pressure at the top of the bottom TBL
+            # Pressure at the top of the bottom TBL (Pb) and at the CMB (Pc)
             Pb = self.rhom*self.g*zb
+            Pc = self.rhom*self.g*(self.Rp - self.Rc)
 
-            # Viscosity at the top of the bottom TBL
+            # Viscosity at the top of the bottom TBL (etab) and at the CMB (etac)
             self.etab[i] = suppf.calculate_viscosity(self, self.Tb[i], Pb)
+            self.etac[i] = suppf.calculate_viscosity(self, self.Tc[i], Pc)
 
             # Update bottom TBL thickness
             self.delta_c[i] = (kappa*self.etab[i]*Racrit_int/(self.rhom*self.alpha*self.g*np.abs(self.Tc[i] - self.Tb[i])))**self.beta  # Thickenss of the lower TBL
@@ -147,10 +149,13 @@ class interior_evolution:
             self.Ur[i] = self.Q_tot[i]*Mm / (self.qs[i]*Ap)
 
             # Advance in time mantle and CMB temperature
-            self.Tm[i+1] = self.Tm[i] + self.dt*(self.Q_tot[i]/self.cm - (Ap*self.qs[i])/(Mm*self.cm) + (Ac*self.qc[i])/(Mm*self.cm))  # Mantle temperature
-            self.Tc[i+1] = self.Tc[i] - ((self.dt*Ac*self.qc[i])/(Mc*self.cc))                                                         # Core temperature
-
-
+            self.Tm[i+1] = self.Tm[i] + self.dt*(self.Q_tot[i]/self.cm + self.Qtidal/self.cm - (Ap*self.qs[i])/(Mm*self.cm) + (Ac*self.qc[i])/(Mm*self.cm))
+            self.Tc[i+1] = self.Tc[i] - ((self.dt*Ac*self.qc[i])/(Mc*self.cc))                                                        
+            
+        # Write timeseries on file
+        suppf.write_output_file(self)
+            
+            
 #####################################################
     def calculate_dc(self, x, ds, Tm, Tc): 
         """"""
