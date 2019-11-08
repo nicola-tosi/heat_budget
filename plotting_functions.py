@@ -82,6 +82,7 @@ def plot_evolution(s):
     ax = fig.add_subplot(nx_panels,ny_panels,n)
     ax.plot(s.t[1:-1]/yr/1e6, s.etam[1:-1], label='$\eta_m$', color=mcolor, lw=lw)
     ax.plot(s.t[1:-1]/yr/1e6, s.etab[1:-1], label='$\eta_b$', color=bcolor, lw=lw)
+    ax.plot(s.t[1:-1]/yr/1e6, s.etac[1:-1], label='$\eta_c$', color=ccolor, lw=lw)
     ax.set_xlabel('Time [Myr]')
     ax.set_ylabel('Viscosity [Pa s]')
     ax.set_yscale('log')
@@ -95,6 +96,7 @@ def plot_evolution(s):
     ax = fig.add_subplot(nx_panels,ny_panels,n)
     ax.plot(s.t[1:-1]/yr/1e6, s.qs[1:-1]*1e3, label='$q_s$', color=mcolor, lw=lw)
     ax.plot(s.t[1:-1]/yr/1e6, s.qc[1:-1]*1e3, label='$q_c$', color=ccolor, lw=lw)
+    
     ax.set_xlabel('Time [Myr]')
     ax.set_ylabel('Heat flux [mW/m$^2$]')
     ax.grid()
@@ -117,7 +119,7 @@ def plot_evolution(s):
 
 
 ####################################################################
-def plot_profiles(s, time, plot_solidus=0):
+def plot_profiles(s, time, plot_solidus=0, plot_liquidus=0):
     """Plot temperature and viscosity profiles at a given time"""
 ####################################################################
     
@@ -134,6 +136,7 @@ def plot_profiles(s, time, plot_solidus=0):
 
     Tcolor = 'tab:blue'
     Tsolcolor = 'tab:red'
+    Tliqcolor = 'tab:red'
     etacolor = 'tab:blue'
 
     lw = 2.5 
@@ -151,7 +154,7 @@ def plot_profiles(s, time, plot_solidus=0):
     n = 0
     
     nptb = 10
-    npta = 100
+    npta = 50
     npts = 10
     npt = nptb + npta + npts
 
@@ -161,19 +164,19 @@ def plot_profiles(s, time, plot_solidus=0):
     n = n + 1
     ax = fig.add_subplot(nx_panels,ny_panels,n)
 
-    # Lower boundary layer
-    rb = np.linspace(s.Rc, s.Rc + s.delta_c[i], nptb)
-    Trb = np.linspace(s.Tc[i], s.Tb[i], nptb)
-    ax.plot(Trb, rb/1e3, '-', color=Tcolor, lw=lw)    
-
     # Adiabatic mantle
     ra = np.linspace(s.Rc + s.delta_c[i], s.Rp - s.delta_s[i],  npta)
     Ta = s.Tm[i]*np.exp(s.alpha * s.g * (s.Rp - ra) / s.cm )    
     ax.plot(Ta, ra/1e3, '-', color=Tcolor, lw=lw)
 
+    # Lower boundary layer
+    rb = np.linspace(s.Rc, s.Rc + s.delta_c[i], nptb)
+    Trb = np.linspace(s.Tc[i], Ta[0], nptb)
+    ax.plot(Trb, rb/1e3, '-', color=Tcolor, lw=lw)    
+
     # Upper boundary layer
     rs = np.linspace(s.Rp - s.delta_s[i], s.Rp, npts)
-    Trs = np.linspace(s.Tm[i], s.Ts, npts)
+    Trs = np.linspace(Ta[npta-1], s.Ts, npts)
     ax.plot(Trs, rs/1e3, '-', color=Tcolor, lw=lw)    
     
     # Solidus
@@ -182,7 +185,14 @@ def plot_profiles(s, time, plot_solidus=0):
         rsol = s.Rp - Psol/(s.rhom*s.g)
         Tsol = suppf.calculate_dry_solidus(Psol/1e9)
         ax.plot(Tsol, rsol/1e3, '--', color=Tsolcolor, lw=lw)    
-     
+        
+    # Liquidus
+    if plot_liquidus == 'yes':
+        Pliq = np.linspace(Pmax,0,npt)
+        rliq = s.Rp - Pliq/(s.rhom*s.g)
+        Tliq = suppf.calculate_dry_liquidus(Pliq/1e9)
+        ax.plot(Tliq, rsol/1e3, '--', color=Tliqcolor, lw=lw)    
+             
     ax.grid()    
     ax.set_ylabel('Radius [km]')
     ax.set_xlabel('Temperautre [K]')
@@ -247,7 +257,7 @@ def plot_profiles_evolution(s):
     plt.rc('legend', fontsize=medium_size)   # legend fontsize
     plt.rc('figure', titlesize=bigger_size)  # fontsize of the figure title
     
-    nt = np.size(s.t)
+    nt = np.size(s.t)-1
     nptb = 10
     npta = 150
     npts = 10
@@ -263,22 +273,22 @@ def plot_profiles_evolution(s):
     
     # Prepare arrays for contour plots
     for i in np.arange(0, nt):
-    
-        # Lower boundary layer
-        rb = np.linspace(s.Rc, s.Rc + s.delta_c[i], nptb)
-        Trb = np.linspace(s.Tc[i], s.Tb[i], nptb)
-        Prb = s.rhom*s.g*(s.Rp - (s.Rc + s.delta_c[i]))
-        etab = suppf.calculate_viscosity(s, Trb, Prb)
-        
+
         # Adiabatic mantle
         ra = np.linspace(s.Rc + s.delta_c[i], s.Rp - s.delta_s[i], npta)
         Ta = s.Tm[i]*np.exp(s.alpha * s.g * (s.Rp - s.delta_s[i] - ra) / s.cm )  
         Pa = s.rhom*s.g*(s.Rp - ra)                     
         etaa = suppf.calculate_viscosity(s, Ta, Pa)    
-            
+                    
+        # Lower boundary layer
+        rb = np.linspace(s.Rc, s.Rc + s.delta_c[i], nptb)
+        Trb = np.linspace(s.Tc[i], Ta[0], nptb)
+        Prb = s.rhom*s.g*(s.Rp - (s.Rc + s.delta_c[i]))
+        etab = suppf.calculate_viscosity(s, Trb, Prb)
+        
         # Upper boundary layer
         rs = np.linspace(s.Rp - s.delta_s[i], s.Rp, npts)
-        Trs = np.linspace(s.Tm[i], s.Ts, npts)
+        Trs = np.linspace(Ta[npts-1], s.Ts, npts)
         Prs = s.rhom*s.g*(s.Rp - rs)
         etas = suppf.calculate_viscosity(s, Trs, Prs)    
                 
@@ -307,11 +317,11 @@ def plot_profiles_evolution(s):
     levsT_cont = np.arange(s.Ts, np.max(Tprof), 10)
     levsT_disc = np.arange(s.Ts, np.max(Tprof), 300)
     
-    cf = ax.contourf(s.t/yr/1e6, r/1e3, Tprof, levsT_cont, cmap=colormap_1)
+    cf = ax.contourf(s.t[:-1]/yr/1e6, r/1e3, Tprof, levsT_cont, cmap=colormap_1)
     cb = plt.colorbar(cf, extend='both', ticks = levsT_disc)
     
-    ax.plot(s.t/yr/1e6, meltzone_top/1e3, '--', color='black', lw=lw)
-    ax.plot(s.t/yr/1e6, meltzone_bot/1e3, '--', color='black', lw=lw)
+    ax.plot(s.t[:-1]/yr/1e6, meltzone_top/1e3, '--', color='black', lw=lw)
+    ax.plot(s.t[:-1]/yr/1e6, meltzone_bot/1e3, '--', color='black', lw=lw)
     
     cb.ax.set_ylabel('Temperature [K]')
     ax.set_xlabel('Time [Myr]')
@@ -331,7 +341,7 @@ def plot_profiles_evolution(s):
     levse_exp_disc = np.arange(np.floor(np.log10(etaprof.min())-1), np.ceil(np.log10(etamax)+1), 2)
     levse_disc = np.power(10, levse_exp_disc)
     
-    cf = ax.contourf(s.t/yr/1e6, r/1e3, etaprof, levse_cont, norm=colors.LogNorm(vmin = etaprof.min(), vmax = etamax), extend='max', cmap=colormap_2)
+    cf = ax.contourf(s.t[:-1]/yr/1e6, r/1e3, etaprof, levse_cont, norm=colors.LogNorm(vmin = etaprof.min(), vmax = etamax), extend='max', cmap=colormap_2)
     cb = plt.colorbar(cf, extend='max', ticks=levse_disc)
     
     cb.ax.set_ylabel('Viscosity [Pa s]')
