@@ -1,6 +1,6 @@
 ######################################################
 import numpy as np
-from scipy.optimize import fsolve, fixed_point
+from scipy.optimize import fsolve, fixed_point, brentq
 from matplotlib import pyplot as plt
 
 from get_input import *
@@ -47,6 +47,7 @@ class interior_evolution:
         self.Q_Th232 = np.zeros((n_steps+1))
         self.Q_K40   = np.zeros((n_steps+1))
         self.Q_tot   = np.zeros((n_steps+1))
+        self.Ra      = np.zeros((n_steps+1))
         self.Ur      = np.zeros((n_steps+1))
         
         # Set initial conditions
@@ -84,21 +85,29 @@ class interior_evolution:
             self.etam[i] = suppf.calculate_viscosity(self, self.Tm[i], Pm)             
 
             # Rayleigh number
-            Ra = self.rhom*self.g*self.alpha*(self.Tm[i] - self.Ts)*D**3./(kappa*self.etam[i])    
+            self.Ra[i] = self.rhom*self.g*self.alpha*(self.Tm[i] - self.Ts)*D**3./(kappa*self.etam[i])    
 
             # Compute surface heat flux based on scaling laws for 
             # mobile lid convection
             if tecmode == 'ML':
-                self.delta_s[i] = D*(self.Racrit/Ra)**self.beta                # Thickness of the upper TBL
+                self.delta_s[i] = D*(self.Racrit/self.Ra[i])**self.beta                # Thickness of the upper TBL
                 self.qs[i] = self.km*(self.Tm[i] - self.Ts) / self.delta_s[i]  # Surface heat flux
 
             # stagnant lid convection
             elif tecmode == 'SL':
-                gamma = self.E*(self.Tm[i] - self.Ts)/(self.Rg*self.Tm[i]**2)                                 # Frank-Kamentzkii parameter      
-                self.qs[i] = self.aa * self.km*(self.Tm[i] - self.Ts) / D * gamma**(-4./3.) * Ra**self.beta  # Surface heat flux
-                self.delta_s[i] = self.km*(self.Tm[i] - self.Ts)/self.qs[i]                                  # Thickness of the upper TBL
-            
- 
+#                 gamma = self.E*(self.Tm[i] - self.Ts)/(self.Rg*self.Tm[i]**2)                                        # Frank-Kamentzkii parameter    
+#                 self.qs[i] = self.aa * self.km*(self.Tm[i] - self.Ts) / D * gamma**(-4./3.) * self.Ra[i]**self.beta  # Surface heat flux
+#                 self.delta_s[i] = self.km*(self.Tm[i] - self.Ts)/self.qs[i]                                          # Thickness of the upper TBL
+                ################################
+                gamma = self.E*(self.Tm[i] - self.Ts)/(self.Rg*self.Tm[i]**2)                                       
+                if(i == 0):
+                    ds_i = self.delta_s0
+                else: 
+                    ds_i = self.delta_s[i-1]                
+                self.delta_s[i] = fixed_point(suppf.calculate_ds, ds_i, args = (self, self.Tm[i], gamma), xtol=1e-8, maxiter=10000) 
+                self.qs[i] = self.km*(self.Tm[i] - self.Ts) / self.delta_s[i]     
+                ################################
+             
             # Compute bottom heat flux with iterations
             if(i == 0):
                 dc_i = self.delta_c0
@@ -106,7 +115,8 @@ class interior_evolution:
                 dc_i = self.delta_c[i-1]
 
             # Determine bottom TBL thickness iteratively    
-            dc = fixed_point(self.calculate_dc, dc_i, args = (self.delta_s[i], self.Tm[i], self.Tc[i]) ) 
+            dc = fixed_point(suppf.calculate_dc, dc_i, args = (self, self.delta_s[i], self.Tm[i], self.Tc[i]), xtol=1e-8, maxiter=10000) 
+#             dc = self.delta_c[i-1]
 
             # Temperature at the top of the lower TBL going adiabatically down from Tm
             zb = self.Rp - (self.Rc + dc)           # depth of the lower TBL
@@ -117,17 +127,20 @@ class interior_evolution:
             deltaTc = (self.Tc[i] - self.Tb[i])
             Ra_int = self.rhom*self.g*self.alpha*( deltaTm + deltaTc )*D**3./(kappa*self.etam[i])    
             Racrit_int = 0.28*Ra_int**0.21
+            #### Racrit_int = self.Racrit
 
             # Pressure at the top of the bottom TBL (Pb) and at the CMB (Pc)
             Pb = self.rhom*self.g*zb
             Pc = self.rhom*self.g*(self.Rp - self.Rc)
 
-            # Viscosity at the top of the bottom TBL (etab) and at the CMB (etac)
-            self.etab[i] = suppf.calculate_viscosity(self, self.Tb[i], Pb)
+            # Average viscosity near the bottom TBL (etab) and at the CMB (etac)
+            Tbmean = (self.Tb[i] + self.Tc[i])/2
+            self.etab[i] = suppf.calculate_viscosity(self, Tbmean, Pb)            
             self.etac[i] = suppf.calculate_viscosity(self, self.Tc[i], Pc)
 
             # Update bottom TBL thickness
-            self.delta_c[i] = (kappa*self.etab[i]*Racrit_int/(self.rhom*self.alpha*self.g*np.abs(self.Tc[i] - self.Tb[i])))**self.beta  # Thickenss of the lower TBL
+            self.delta_c[i] = (kappa*self.etab[i]*Racrit_int/(self.rhom*self.alpha*self.g*np.abs(self.Tc[i] - self.Tb[i])))**self.beta  
+            #self.delta_c[i] = dc
             #self.delta_c[i] = min(self.delta_c[i], self.delta_s[i])
 
             # CMB heat flux
@@ -149,33 +162,9 @@ class interior_evolution:
             self.Ur[i] = self.Q_tot[i]*Mm / (self.qs[i]*Ap)
 
             # Advance in time mantle and CMB temperature
-            self.Tm[i+1] = self.Tm[i] + self.dt*(self.Q_tot[i]/self.cm + self.Qtidal/self.cm - (Ap*self.qs[i])/(Mm*self.cm) + (Ac*self.qc[i])/(Mm*self.cm))
+            self.Tm[i+1] = self.Tm[i] + self.dt*(self.Q_tot[i]/self.cm + self.Qtidal/self.cm - (Ap*self.qs[i])/(Mm*self.cm) + (Ac*self.qc[i])/(Mc*self.cm))
             self.Tc[i+1] = self.Tc[i] - ((self.dt*Ac*self.qc[i])/(Mc*self.cc))                                                        
             
         # Write timeseries on file
         suppf.write_output_file(self)
-            
-            
-#####################################################
-    def calculate_dc(self, x, ds, Tm, Tc): 
-        """"""
-#####################################################
-
-        D = self.Rp - self.Rc  
-        kappa = self.km/self.rhom/self.cm                     
-        Pm = self.rhom*self.g*ds
-        etam = suppf.calculate_viscosity(self, Tm, Pm)   
-        zb = self.Rp - (self.Rc + x)
-        Tb = suppf.calculate_adiabat(self, Tm, zb)
-        deltaTc = Tc - Tb
-        deltaTm = Tm - self.Ts
-        Ra_int = self.rhom*self.g*self.alpha*(deltaTm + deltaTc)*D**3./(kappa*etam)    
-        Racrit_int = 0.28*Ra_int**0.21
-        PPb = self.rhom*self.g*zb
-        etab = self.etaref*np.exp( (self.E + PPb*self.V)/(self.Rg*Tb) - (self.E + self.Pref*self.V)/(self.Rg*self.Tref) )
-        dc = ( kappa*etab*Racrit_int / (self.rhom*self.alpha*self.g*np.abs(deltaTc)) )**self.beta 
-        #f = dc - x
-        f = dc
         
-        return f
-
