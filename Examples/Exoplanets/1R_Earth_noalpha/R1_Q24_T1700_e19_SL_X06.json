@@ -1,0 +1,23 @@
+{ 
+  "name"         : "R1_Q25_T1700_e19_SL_X06", 
+  "tectonics"    : "SL",
+  "core_cooling" : "no",
+  "var_alpha"    : "no",
+  "Rp"           : 6370e3,
+  "Rc"           : 4389e3,
+  "g"            : 12.53,         
+  "rhom"         : 4185,          
+  "rhoc"         : 12915,          
+  "Ts"           : 288,       
+  "Tm0"          : 1700,            
+  "Tc0"          : 4400,            
+  "etaref"       : 1e19,            
+  "X_U"          : 0,
+  "X_Th"         : 0,
+  "X_K"          : 0,
+  "Q0"           : 24e-12,
+  "lam"          : 1.22e-17,
+  "Qtidal"       : 0
+}
+
+

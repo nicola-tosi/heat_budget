@@ -1,0 +1,21 @@
+{ 
+  "name"         : "Earth_T1900_noTc_e21_SL", 
+  "tectonics"    : "SL", 
+  "core_cooling" : "no", 
+  "var_alpha"    : "yes",
+  "Rp"     	 :  6370e3,
+  "Rc"     	 :  3480e3,
+  "g"      	 :  9.8,       
+  "rhom"   	 :  4460,        
+  "rhoc"   	 :  10640,        
+  "Ts"     	 :  288,    
+  "Tm0"    	 :  1900,          
+  "Tc0"    	 :  4200,       
+  "etaref" 	 :  1e21,        
+  "X_U"    	 :  20e-9,
+  "X_Th"   	 :  80e-9, 
+  "X_K"    	 :  240e-6,
+  "Q0"     	 :  0,
+  "lam"    	 :  0,
+  "Qtidal" 	 :  0
+}
