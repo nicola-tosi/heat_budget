@@ -1,0 +1,21 @@
+{ 
+  "name"         : "M05_Q12_T1700_e21_SL", 
+  "tectonics"    : "SL",
+  "core_cooling" : "no",
+  "var_alpha"    : "no",
+  "Rp"           : 5284e3,
+  "Rc"           : 2932e3,
+  "g"            : 7.13,         
+  "rhom"         : 3929.12,          
+  "rhoc"         : 9216,          
+  "Ts"           : 288,       
+  "Tm0"          : 1700,            
+  "Tc0"          : 4400,            
+  "etaref"       : 1e21,            
+  "X_U"          : 0,
+  "X_Th"         : 0,
+  "X_K"          : 0,
+  "Q0"           : 12e-12,
+  "lam"          : 1.22e-17,
+  "Qtidal"       : 0
+}

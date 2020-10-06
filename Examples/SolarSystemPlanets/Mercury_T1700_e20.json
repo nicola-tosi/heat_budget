@@ -1,0 +1,21 @@
+{ 
+  "name"         : "Mercury_T1700_e20", 
+  "tectonics"    : "SL", 
+  "core_cooling" : "no", 
+  "var_alpha"    : "no",
+  "Rp"     	 : 2440e3,
+  "Rc"     	 : 2024e3,
+  "g"      	 : 3.7,      
+  "rhom"   	 : 3295,        
+  "rhoc"   	 : 7034,        
+  "Ts"     	 : 440,    
+  "Tm0"    	 : 1700,          
+  "Tc0"    	 : 1900,          
+  "etaref" 	 : 1e20,        
+  "X_U"    	 : 25e-9, 
+  "X_Th"   	 : 44e-9,
+  "X_K"    	 : 368e-6,
+  "Q0"     	 : 0,
+  "lam"    	 : 0,
+  "Qtidal" 	 : 0
+}

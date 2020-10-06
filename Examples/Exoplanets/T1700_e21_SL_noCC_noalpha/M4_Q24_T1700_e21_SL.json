@@ -1,0 +1,23 @@
+{ 
+  "name"         : "M4_Q24_T1700_e21_SL", 
+  "tectonics"    : "SL",
+  "core_cooling" : "no",
+  "var_alpha"    : "no",
+  "Rp"           : 9263e3,
+  "Rc"           : 4901e3,
+  "g"            : 18.56,         
+  "rhom"         : 5676,          
+  "rhoc"         : 15792,          
+  "Ts"           : 288,       
+  "Tm0"          : 1700,            
+  "Tc0"          : 7798,            
+  "etaref"       : 1e21,            
+  "X_U"          : 0,
+  "X_Th"         : 0,
+  "X_K"          : 0,
+  "Q0"           : 24e-12,
+  "lam"          : 1.22e-17,
+  "Qtidal"       : 0
+}
+
+

@@ -1,0 +1,23 @@
+{ 
+  "name"         : "M2_Q12_T1700_e19_ML", 
+  "tectonics"    : "ML",
+  "core_cooling" : "no",
+  "var_alpha"    : "no",
+  "Rp"           : 7682e3,
+  "Rc"           : 4129e3,
+  "g"            : 13.49,         
+  "rhom"         : 5018,          
+  "rhoc"         : 13197,          
+  "Ts"           : 288,       
+  "Tm0"          : 1700,            
+  "Tc0"          : 5700,            
+  "etaref"       : 1e19,            
+  "X_U"          : 0,
+  "X_Th"         : 0,
+  "X_K"          : 0,
+  "Q0"           : 12e-12,
+  "lam"          : 1.22e-17,
+  "Qtidal"       : 0
+}
+
+

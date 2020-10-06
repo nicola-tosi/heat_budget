@@ -1,0 +1,22 @@
+{ 
+  "name"         : "Moon_T1700_e18", 
+  "tectonics"    : "SL", 
+  "core_cooling" : "no", 
+  "var_alpha"    : "no",
+  "Rp"     	 : 1740e3,
+  "Rc"     	 : 330e3,
+  "g"      	 : 1.6,       
+  "rhom"   	 : 3400,           
+  "rhoc"   	 : 7400,           
+  "Ts"     	 : 270,        
+  "Tm0"    	 : 1700,              
+  "Tc0"    	 : 1998,             
+  "etaref" 	 : 1e18,          
+  "X_U"    	 : 33e-9,
+  "X_Th"   	 : 125e-9,
+  "X_K"    	 : 82.5e-6,
+  "Q0"     	 : 0,
+  "lam"    	 : 0,
+  "Qtidal" 	 : 0
+}
+

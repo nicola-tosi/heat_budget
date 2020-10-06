@@ -1,0 +1,21 @@
+{ 
+  "name"         : "Mars_T1700_e20", 
+  "tectonics"    : "SL", 
+  "core_cooling" : "no", 
+  "var_alpha"    : "no",
+  "Rp"     	 : 3390e3,
+  "Rc"     	 : 1850e3,
+  "g"      	 : 3.7,         
+  "rhom"   	 : 3500.0,          
+  "rhoc"   	 : 7200.0,          
+  "Ts"     	 : 220.0,       
+  "Tm0"    	 : 1700.0,            
+  "Tc0"    	 : 2160.0,            
+  "etaref" 	 : 1e20,            
+  "X_U"    	 : 16e-9,
+  "X_Th"   	 : 56e-9,
+  "X_K"    	 : 305e-6,
+  "Q0"     	 : 0,
+  "lam"    	 : 0,
+  "Qtidal" 	 : 0
+}

@@ -1,0 +1,21 @@
+{ 
+  "name"         : "Venus_T1700_e20", 
+  "tectonics"    : "SL", 
+  "core_cooling" : "no", 
+  "var_alpha"    : "no",
+  "Rp"     	 :  6050e3,
+  "Rc"     	 :  3186e3,
+  "g"      	 :  8.87,       
+  "rhom"   	 :  4400.0,         
+  "rhoc"   	 :  10100.0,        
+  "Ts"     	 :  730.0,      
+  "Tm0"    	 :  1700,            
+  "Tc0"    	 :  4200,          
+  "etaref" 	 :  1e20,           
+  "X_U"    	 :  21e-9,
+  "X_Th"   	 :  86e-9, 
+  "X_K"    	 :  153e-6, 
+  "Q0"     	 :  0,
+  "lam"    	 :  0,
+  "Qtidal" 	 :  0
+}

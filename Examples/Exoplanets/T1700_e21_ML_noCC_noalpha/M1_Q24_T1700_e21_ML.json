@@ -1,0 +1,21 @@
+{ 
+  "name"         : "M1_Q24_T1700_e21_ML", 
+  "tectonics"    : "ML",
+  "core_cooling" : "no",
+  "var_alpha"    : "no",
+  "Rp"           : 6370e3,
+  "Rc"           : 3480e3,
+  "g"            : 9.8,         
+  "rhom"         : 4460,          
+  "rhoc"         : 10640,          
+  "Ts"           : 288,       
+  "Tm0"          : 1700,            
+  "Tc0"          : 4400,            
+  "etaref"       : 1e21,            
+  "X_U"          : 0,
+  "X_Th"         : 0,
+  "X_K"          : 0,
+  "Q0"           : 24e-12,
+  "lam"          : 1.22e-17,
+  "Qtidal"       : 0
+}
